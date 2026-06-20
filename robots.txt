@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /pages/aviso-legal.html
+Disallow: /pages/politica-privacidad.html
+Disallow: /pages/politica-cookies.html
+
+Sitemap: https://elmejorelectro.es/sitemap.xml
