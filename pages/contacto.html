@@ -127,9 +127,14 @@
             </p>
           </div>
 
-          <!-- Mensaje de confirmación (oculto por defecto) -->
+          <!-- Mensaje de confirmación -->
           <div id="form-success" style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:var(--radius-sm);padding:1rem 1.25rem;">
             <p style="color:#15803d;font-weight:600;">Mensaje enviado correctamente. Te responderemos pronto.</p>
+          </div>
+
+          <!-- Mensaje de error -->
+          <div id="form-error" style="display:none;background:rgba(232,68,10,.1);border:1px solid rgba(232,68,10,.3);border-radius:var(--radius-sm);padding:1rem 1.25rem;">
+            <p style="color:#C73309;font-weight:600;">Ha ocurrido un error al enviar el mensaje. Por favor, inténtalo de nuevo o escríbenos a <a href="mailto:info@elmejorelectro.es" style="color:#C73309;">info@elmejorelectro.es</a>.</p>
           </div>
 
         </form>
@@ -169,23 +174,43 @@
 
   <script src="../js/main.js"></script>
   <script>
-    /* Formulario de contacto — validación básica + feedback visual */
     (function () {
       var form    = document.getElementById('contact-form');
       var success = document.getElementById('form-success');
+      var error   = document.getElementById('form-error');
+      var btn     = form ? form.querySelector('button[type="submit"]') : null;
 
       if (!form) return;
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        /* Aquí conectar con Formspree, EmailJS u otro servicio:
-           fetch('https://formspree.io/f/YOUR_ID', { method:'POST', body: new FormData(form) }) */
+        btn.disabled    = true;
+        btn.textContent = 'Enviando…';
+        error.style.display   = 'none';
+        success.style.display = 'none';
 
-        /* Feedback visual de prueba */
-        success.style.display = 'block';
-        form.reset();
-        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        fetch('https://formspree.io/f/mvzjpqob', {
+          method:  'POST',
+          body:    new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(function (res) {
+          if (res.ok) {
+            success.style.display = 'block';
+            form.reset();
+            success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            error.style.display = 'block';
+            btn.disabled    = false;
+            btn.textContent = 'Enviar mensaje';
+          }
+        })
+        .catch(function () {
+          error.style.display = 'block';
+          btn.disabled    = false;
+          btn.textContent = 'Enviar mensaje';
+        });
       });
     })();
   </script>
