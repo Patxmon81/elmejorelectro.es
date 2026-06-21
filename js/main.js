@@ -141,6 +141,20 @@
   var cookieReject = document.getElementById('cookie-reject');
 
   var COOKIE_KEY = 'elmejorelectro_cookies';
+  var GA_ID      = 'G-FXZN306H1H';
+
+  /* Carga Google Analytics de forma dinámica (solo si hay consentimiento) */
+  function initGA() {
+    if (window.gtag) return;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src   = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GA_ID);
+  }
 
   function hideBanner() {
     cookieBanner.classList.add('cookie-hidden');
@@ -152,12 +166,16 @@
     setTimeout(function () {
       cookieBanner.classList.add('cookie-visible');
     }, 1200);
+  } else if (localStorage.getItem(COOKIE_KEY) === 'accepted') {
+    // Visitante que ya aceptó cookies → carga GA de inmediato
+    initGA();
   }
 
   if (cookieAccept) {
     cookieAccept.addEventListener('click', function () {
       localStorage.setItem(COOKIE_KEY, 'accepted');
       hideBanner();
+      initGA();
     });
   }
 
